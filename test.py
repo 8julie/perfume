@@ -11,18 +11,19 @@ class TestScraper(unittest.TestCase):
     #     # Must be false
     #     self.assertTrue(3 == 4)
 
-    def test_scrape(self):
+    def test_index(self):
         """
-        Test that it scrapes
+        Test that it scrapes for the index
         """
 
         # Deletes pre-existing files
         os.remove("index.json")
 
-        soup = self.s.scrape()
-        fn = self.s.saveIndex(soup)
-        self.assertTrue(os.path.exists(fn))
+        self.s.makeIndex()
 
+        # soup = self.s.scrape()
+        fn = self.s.makeIndex()
+        self.assertTrue(os.path.exists(fn))
 
 if __name__ == '__main__':
     unittest.main()

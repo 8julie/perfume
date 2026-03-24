@@ -7,6 +7,7 @@ from urllib.parse import urlparse, urljoin
 
 import json
 
+import os
 
 class Scraper():
     def __init__(self, url):
@@ -14,12 +15,25 @@ class Scraper():
         self.url = url
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
+    
+    def makeIndex(self, *args):
+        soup = self.scrape(args)
+        fn = self.saveIndex(soup)
+        return fn
+
+    def save(file_name, info):
+        """Writes data into a json file"""
+        file_name += '.json'
+        with open(file_name, 'w', encoding='latin-1') as f:
+            json.dump(info, f, indent=8, ensure_ascii=False)
+        
+        return file_name
 
     def scrape(self, *args):
         if (args == True):
             scrape_url = args[0] # lol
-
-        scrape_url = self.url
+        else:
+            scrape_url = self.url
 
 
         """A simple scraper"""
@@ -50,49 +64,30 @@ class Scraper():
         # fn = "index"
         return Scraper.save(fn, res)
 
-    def save(file_name, info):
-        """Writes data into a json file"""
-        file_name += '.json'
-        with open(file_name, 'w', encoding='latin-1') as f:
-            json.dump(info, f, indent=8, ensure_ascii=False)
+    def loadIndex():
+        with open('index.json', 'r') as file:
+            data = json.load(file)
         
-        return file_name
+        return data
 
-
-
-
-    def scrapeIndex():
+    def scrapeIndex(self):
         """Scrapes based on index.json"""
 
         # Loads the data
-        with open('index.json', 'r') as file:
-            data = json.load(file)
+        if (os.path.exists("index.json")):
+            data = self.loadIndex()
+        else:
+            self.scrape()
 
-
+        
         for item in data:
             soup = Scraper.scrape(item['link'])
+            items = soup.find("td", class_="wrd80")
 
+            print(items.get_text())
 
-            # link_pattern = r'data.*html'
-            on_clicks = soup.find('table', class_="cheminfo")
-
-
-            # Potential Blenders and core components section
-            name = item.get_text().replace("specialty", "")
-            link = re.findall(link_pattern, item['onclick'])[0]
-            absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
-
-            data = {'name': name, 'link': absolute_link}
-
-
-            data = {
-                'company'
-                'descriptors'
-            }
-
-            print(soup)
-            break
-
+        time.sleep(4) # optional ..... i'm just being nice
+        
         pass
 
     def saveProfile(self, soup):
