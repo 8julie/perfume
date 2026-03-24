@@ -18,17 +18,16 @@ class Scraper():
     def __init__(self, url):
         self.url = url # intended to be the index
         self.parsed_url = urlparse(self.url)
-        self.base_url = urljoin(self.parsed_url.scheme, self.parsed_url.netloc)
 
-        self.saveIndex(self.scrape(self.url))
+        soup = Scraper.scrape(self.url)
+        self.saveIndex(soup)
 
 
-    def scrape(self, scrape_url):
+    def scrape(scrape_url):
         """A simple scraper"""
         response = requests.get(scrape_url)
         soup = BeautifulSoup(response.text, 'html.parser')
         time.sleep(4) # optional ..... i'm just being nice
-
         return soup
 
 
@@ -39,13 +38,13 @@ class Scraper():
 
         # Selects
         link_pattern = r'data.*html'
-        on_clicks = self.soup.find_all('a', {'onclick' : re.compile(link_pattern)})
+        on_clicks = soup.find_all('a', {'onclick' : re.compile(link_pattern)})
 
         # Parses
         for item in on_clicks:
             name = item.get_text().replace("specialty", "")
             link = re.findall(link_pattern, item['onclick'])[0]
-            absolute_link = self.base_url + "/" + link
+            absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
 
             data = {'name': name, 'link': absolute_link}
 
@@ -56,13 +55,16 @@ class Scraper():
         fn = "index"
         save(fn, res)
 
-    def scrapeIndex(self):
+    def scrapeIndex():
         """Scrapes based on index.json"""
         with open('index.json', 'r') as file:
             data = json.load(file)
             for item in data:
-                print (item)
+                soup = Scraper.scrape(item['link'])
+                print(soup)
+                break
 
 if __name__ == "__main__":
     url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares
-    Scraper.scrapeIndex(Scraper)
+    Scraper(url)
+    Scraper.scrapeIndex()
