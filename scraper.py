@@ -20,18 +20,19 @@ class Scraper():
         self.parsed_url = urlparse(self.url)
         self.base_url = urljoin(self.parsed_url.scheme, self.parsed_url.netloc)
 
-        self.scrape()
-        self.saveIndex()
+        self.saveIndex(self.scrape())
 
 
     def scrape(self):
         """A simple scraper"""
         response = requests.get(url)
-        self.soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         time.sleep(4) # optional ..... i'm just being nice
 
-    
-    def saveIndex(self):
+        return soup
+
+
+    def saveIndex(self, soup):
         """Assumes self.url contains index, gets items/frag bases"""
 
         res = []
@@ -55,8 +56,13 @@ class Scraper():
         fn = "index"
         save(fn, res)
 
-    
+    def scrapeIndex(self):
+        """Scrapes based on index.json"""
+        with open('index.json', 'r') as file:
+            data = json.load(file)
+            for item in data:
+                print (item)
 
 if __name__ == "__main__":
     url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares
-    Scraper(url)
+    Scraper.scrapeIndex(Scraper)
