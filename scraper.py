@@ -20,12 +20,12 @@ class Scraper():
         self.parsed_url = urlparse(self.url)
         self.base_url = urljoin(self.parsed_url.scheme, self.parsed_url.netloc)
 
-        self.saveIndex(self.scrape())
+        self.saveIndex(self.scrape(self.url))
 
 
-    def scrape(self):
+    def scrape(self, scrape_url):
         """A simple scraper"""
-        response = requests.get(url)
+        response = requests.get(scrape_url)
         soup = BeautifulSoup(response.text, 'html.parser')
         time.sleep(4) # optional ..... i'm just being nice
 
