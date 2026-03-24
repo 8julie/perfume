@@ -8,11 +8,13 @@ def scrape(site_url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    profile_links = soup.find_all('a')
+    # Selects
+    pattern = r'data.*html'
+    on_clicks = soup.find_all('a', {'onclick' : re.compile(pattern)})
 
-    for link in profile_links:
-        print(link)
-    
+    for item in on_clicks:
+        print (re.findall(pattern, item['onclick'])[0], item.get_text())
+
     time.sleep(4)
 
 
