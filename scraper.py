@@ -29,16 +29,15 @@ class Scraper():
         
         return file_name
 
-    def scrape(self, *args):
-        if (args == True):
-            scrape_url = args[0] # lol
-        else:
-            scrape_url = self.url
-
-
+    def scrape(self, url="", parser="html.parser") -> BeautifulSoup:
         """A simple scraper"""
-        response = requests.get(scrape_url)
-        soup = BeautifulSoup(response.text, 'html.parser')
+
+        if (url == ""):
+            url = self.url  
+
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, parser)
         time.sleep(4) # optional ..... i'm just being nice
         return soup
 
@@ -73,27 +72,36 @@ class Scraper():
     def scrapeIndex(self):
         """Scrapes based on index.json"""
 
-        # Loads the data
         if (os.path.exists("index.json")):
-            data = self.loadIndex()
+            data = Scraper.loadIndex()
         else:
-            self.scrape()
+            self.makeIndex()
 
-        
+        res = []
+
         for item in data:
-            soup = Scraper.scrape(item['link'])
-            items = soup.find("td", class_="wrd80")
+            link = item['link']
+            name = item['name']
 
-            print(items.get_text())
+            print(name, link)
+            soup = self.scrape(link).find_all("td", class_="wrd80")
 
-        time.sleep(4) # optional ..... i'm just being nice
+            for res in soup:
+                ingr_link = res.find('a').get('href')
+                ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=res.get_text())
+
+                data = {
+                    'name':name,
+                    'ingr_name': ingr_name,
+                    'ingr_link': ingr_link
+                }
+                res.append(data)
+            Scraper.save(name, res)
+            res = []
+
+            time.sleep(4) # optional ..... i'm just being nice
         
-        pass
-
-    def saveProfile(self, soup):
-        """Helper for scrapeIndex"""
-        pass
-    
+        pass    
 
 if __name__ == "__main__":
     url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares

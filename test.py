@@ -11,6 +11,7 @@ class TestScraper(unittest.TestCase):
     #     # Must be false
     #     self.assertTrue(3 == 4)
 
+    @unittest.skip("Don't need to rebuild every time")
     def test_index(self):
         """
         Test that it scrapes for the index
@@ -24,6 +25,9 @@ class TestScraper(unittest.TestCase):
         # soup = self.s.scrape()
         fn = self.s.makeIndex()
         self.assertTrue(os.path.exists(fn))
+
+    def test_scrape_index(self):
+        self.s.scrapeIndex()
 
 if __name__ == '__main__':
     unittest.main()
