@@ -106,6 +106,7 @@ class Scraper():
             link = note['link']
             name = note['name']
             idx = note['idx']
+            iidx = 1
 
             # print(name, link)
             soup = self.scrape(link).find_all("td", class_="wrd80")
@@ -115,9 +116,12 @@ class Scraper():
                 ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=td.get_text())
 
                 res.append({
+                    'idx': iidx,
                     'ingr_name': ingr_name,
                     'ingr_link': ingr_link
                 })
+
+                iidx += 1
 
             
             Scraper.save(str(idx), res, folder_name)
