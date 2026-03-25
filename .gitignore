@@ -1,3 +1,4 @@
 /ingredients
 index.json
 /.vscode
+__pycache__/scraper.cpython-313.pyc

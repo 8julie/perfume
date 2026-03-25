@@ -141,8 +141,7 @@ class Scraper():
                 iidx += 1
 
             
-            if (num_of_files%50 == 0 | num_of_files == 0):
-                print("Saved ", num_of_files, " into /ingredients")
+            print("Saved ", num_of_files, " into /ingredients")
 
             Scraper.save(str(idx), res, folder_name)
             num_of_files += 1
