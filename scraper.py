@@ -16,12 +16,21 @@ class Scraper():
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
     
-    def makeIndex(self, *args):
-        soup = self.scrape(args)
+    def makeIndex(self, url=""):
+        """Creates an index"""
+
+        if (url == ""):
+            url = self.url
+
+        soup = self.scrape(url)
         fn = self.saveIndex(soup)
         return fn
 
-    def save(file_name, info):
+    def save(file_name, info, folder_name=""):
+        if (folder_name != ""):
+            os.mkdir(folder_name)
+            folder_name += "/" + file_name
+
         """Writes data into a json file"""
         file_name += '.json'
         with open(file_name, 'w', encoding='latin-1') as f:
@@ -45,6 +54,7 @@ class Scraper():
         """Assumes self.url contains index, gets items/frag bases"""
 
         res = []
+        idx = 1
 
         # Selects the link
         link_pattern = r'data.*html'
@@ -56,7 +66,12 @@ class Scraper():
             link = re.findall(link_pattern, item['onclick'])[0]
             absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
 
-            data = {'name': name, 'link': absolute_link}
+            data = {
+                'idx': idx,
+                'name': name, 
+                'link': absolute_link}
+            
+            idx += 1
             res.append(data)
 
         # Puts it somewhere
@@ -73,37 +88,39 @@ class Scraper():
         """Scrapes based on index.json"""
 
         if (os.path.exists("index.json")):
-            data = Scraper.loadIndex()
+            indexes = Scraper.loadIndex()
         else:
             self.makeIndex()
 
         res = []
 
-        for item in data:
-            link = item['link']
-            name = item['name']
+        for note in indexes:
+            link = note['link']
+            name = note['name']
+            idx = note['idx']
 
-            print(name, link)
+            # print(name, link)
             soup = self.scrape(link).find_all("td", class_="wrd80")
 
-            for res in soup:
-                ingr_link = res.find('a').get('href')
-                ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=res.get_text())
+            for td in soup:
+                ingr_link = td.find('a').get('href')
+                ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=td.get_text())
 
-                data = {
-                    'name':name,
+                res.append({
+                    'idx':idx,
                     'ingr_name': ingr_name,
                     'ingr_link': ingr_link
-                }
-                res.append(data)
+                })
+
+            
             Scraper.save(name, res)
-            res = []
+            res.clear()
 
             time.sleep(4) # optional ..... i'm just being nice
         
         pass    
 
-if __name__ == "__main__":
-    url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares
-    Scraper(url)
-    Scraper.scrapeIndex()
+# if __name__ == "__main__":
+#     url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares
+#     Scraper(url)
+#     Scraper.scrapeIndex()
