@@ -18,7 +18,8 @@ class TestScraper(unittest.TestCase):
         """
 
         # Deletes pre-existing files
-        os.remove("index.json")
+        if (os.path.exists("index.json")):
+            os.remove("index.json")
 
         self.s.makeIndex()
 
@@ -26,6 +27,7 @@ class TestScraper(unittest.TestCase):
         fn = self.s.makeIndex()
         self.assertTrue(os.path.exists(fn))
 
+    # @unittest.skip("Don't need to rebuild every time")
     def test_scrape_index(self):
         self.s.scrapeIndex()
 

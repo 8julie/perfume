@@ -17,7 +17,10 @@ class Scraper():
         self.fn_index = ""
     
     def makeIndex(self, url=""):
-        """Creates an index"""
+        """Creates an index
+        
+        Returns file name of index
+        """
 
         if (url == ""):
             url = self.url
@@ -27,9 +30,12 @@ class Scraper():
         return fn
 
     def save(file_name, info, folder_name=""):
+        """Saves a file, with an optional folder for the name"""
+
         if (folder_name != ""):
-            os.mkdir(folder_name)
-            folder_name += "/" + file_name
+            if (os.path.exists(folder_name) == False):
+                os.mkdir(folder_name)
+            file_name = folder_name + "/" + file_name
 
         """Writes data into a json file"""
         file_name += '.json'
@@ -84,8 +90,10 @@ class Scraper():
         
         return data
 
-    def scrapeIndex(self):
-        """Scrapes based on index.json"""
+    def scrapeIndex(self, folder_name="ingredients"):
+        """Scrapes based on index.json
+        
+        Returns location of the folder"""
 
         if (os.path.exists("index.json")):
             indexes = Scraper.loadIndex()
@@ -107,20 +115,23 @@ class Scraper():
                 ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=td.get_text())
 
                 res.append({
-                    'idx':idx,
                     'ingr_name': ingr_name,
                     'ingr_link': ingr_link
                 })
 
             
-            Scraper.save(name, res)
+            Scraper.save(str(idx), res, folder_name)
             res.clear()
 
             time.sleep(4) # optional ..... i'm just being nice
         
-        pass    
+        return folder_name
 
-# if __name__ == "__main__":
-#     url = 'https://www.thegoodscentscompany.com/peb-az.html' # very rudimentary but it's just 1 link! who cares
-#     Scraper(url)
-#     Scraper.scrapeIndex()
+if __name__ == "__main__":
+    url = "https://www.thegoodscentscompany.com/peb-az.html"
+    s = Scraper(url)
+
+    
+    fn_index = s.makeIndex()
+    s.scrapeIndex()
+    Scraper.scrapeIndex()
