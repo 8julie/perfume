@@ -17,7 +17,7 @@ class Scraper():
         self.fn_index = ""
     
     def makeIndex(self, url=""):
-        """Creates an index
+        """Creates `index.json`
         
         Returns file name of index
         """
@@ -57,7 +57,7 @@ class Scraper():
         return file_name
 
     def saveIndex(self, soup, fn="index"):
-        """Gets items/frag bases
+        """Creates `/ingredients`
         
         file name = index:idx
         idx = fragrance idx
@@ -89,11 +89,19 @@ class Scraper():
         # fn = "index"
         return Scraper.save(fn, res)
 
-    def saveIngredients():
-        pass
+    def saveProfiles():
+        """Based on the fragrance
+        
+        1. Saves ingredients' profile 
+        2. and words associated with notes on this profile"""
 
-    def loadIndex():
-        with open('index.json', 'r') as file:
+        if (not (os.path.exists('/ingredients') and os.len(os.listdir('/ingredients')) != 0)):
+            raise Exception("/ingredients does not exist, run saveIndex() to create /ingredients")
+        
+
+
+    def loadjson(fn='index.json'):
+        with open(fn, 'r') as file:
             data = json.load(file)
         
         return data
@@ -105,7 +113,7 @@ class Scraper():
         num_of_files = 0
 
         if (os.path.exists("index.json")):
-            indexes = Scraper.loadIndex()
+            indexes = Scraper.loadjson("index.json")
         else:
             self.makeIndex()
 
@@ -133,7 +141,7 @@ class Scraper():
                 iidx += 1
 
             
-            if (num_of_files%50 | num_of_files == 0):
+            if (num_of_files%50 == 0 | num_of_files == 0):
                 print("Saved ", num_of_files, " into /ingredients")
 
             Scraper.save(str(idx), res, folder_name)
