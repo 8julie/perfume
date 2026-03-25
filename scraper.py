@@ -94,6 +94,7 @@ class Scraper():
         """Scrapes based on index.json
         
         Returns location of the folder"""
+        num_of_files = 0
 
         if (os.path.exists("index.json")):
             indexes = Scraper.loadIndex()
@@ -124,7 +125,11 @@ class Scraper():
                 iidx += 1
 
             
+            if (num_of_files%50 | num_of_files == 0):
+                print("Saved ", num_of_files, " into /ingredients")
+
             Scraper.save(str(idx), res, folder_name)
+            num_of_files += 1
             res.clear()
 
             time.sleep(4) # optional ..... i'm just being nice
@@ -138,4 +143,3 @@ if __name__ == "__main__":
     
     fn_index = s.makeIndex()
     s.scrapeIndex()
-    Scraper.scrapeIndex()

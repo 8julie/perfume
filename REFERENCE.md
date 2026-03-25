@@ -19,6 +19,7 @@ Contains perfume notes.
 ---
 
 ### `ingredients.json`
+file name = perfume note
 |field|description|
 |--|--|
 |name|name of ingredient|
