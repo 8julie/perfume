@@ -29,6 +29,18 @@ class Scraper():
         fn = self.saveIndex(soup)
         return fn
 
+    def scrape(self, url="", parser="html.parser") -> BeautifulSoup:
+        """A simple scraper"""
+
+        if (url == ""):
+            url = self.url  
+
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, parser)
+        time.sleep(4) # optional ..... i'm just being nice
+        return soup
+
     def save(file_name, info, folder_name=""):
         """Saves a file, with an optional folder for the name"""
 
@@ -44,20 +56,13 @@ class Scraper():
         
         return file_name
 
-    def scrape(self, url="", parser="html.parser") -> BeautifulSoup:
-        """A simple scraper"""
-
-        if (url == ""):
-            url = self.url  
-
-
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, parser)
-        time.sleep(4) # optional ..... i'm just being nice
-        return soup
-
     def saveIndex(self, soup, fn="index"):
-        """Assumes self.url contains index, gets items/frag bases"""
+        """Gets items/frag bases
+        
+        file name = index:idx
+        idx = fragrance idx
+        name = fragrance ingredient
+        link = link to ingredient information"""
 
         res = []
         idx = 1
@@ -83,6 +88,9 @@ class Scraper():
         # Puts it somewhere
         # fn = "index"
         return Scraper.save(fn, res)
+
+    def saveIngredients():
+        pass
 
     def loadIndex():
         with open('index.json', 'r') as file:

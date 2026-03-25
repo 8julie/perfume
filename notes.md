@@ -2,10 +2,10 @@
 
 Will add more (?)
 
-## Perfumes:
+## Perfumes
 - FragDB: database for Fragrantica perfumes
 
-## Perfume bases:
+## Perfume bases
 - [TGSC Information system](https://www.thegoodscentscompany.com/peb-az.html)
 
 Not implemented yet:
