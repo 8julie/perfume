@@ -6,8 +6,9 @@ In general, `idx` stands for the UUID
 
 ---
 
-### `schema.json`
-
+# How does it look like?
+![""](/images/basic.png)
+`index.json` contains notes, `/ingredients` contain list of ingredients for that note (file names are idx of `index.json`), and the `profiles` page contains information about the ingredient.
 
 ### `index.json`
 Contains perfume notes.
