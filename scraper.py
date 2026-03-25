@@ -95,11 +95,16 @@ class Scraper():
         1. Saves ingredients' profile 
         2. and words associated with notes on this profile"""
 
+        data = {
+            'name': "something",
+            'cas': 'cas number',
+            'jsmol':'image!'
+            
+        }
+
         if (not (os.path.exists('/ingredients') and os.len(os.listdir('/ingredients')) != 0)):
             raise Exception("/ingredients does not exist, run saveIndex() to create /ingredients")
         
-
-
     def loadjson(fn='index.json'):
         with open(fn, 'r') as file:
             data = json.load(file)
@@ -130,7 +135,14 @@ class Scraper():
 
             for td in soup:
                 ingr_link = td.find('a').get('href')
-                ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", string=td.get_text())
+                raw_text = td.get_text()
+
+                if (raw_text.find("FR") == False):
+                    print(raw_text, " is NOT a fragrance, skipped")
+                    break
+                
+                else:
+                    ingr_name = re.sub(r'(FR)|(FL)|(\/)', "", raw_text)
 
                 res.append({
                     'idx': iidx,
@@ -141,10 +153,10 @@ class Scraper():
                 iidx += 1
 
             
-            print("Saved ", num_of_files, " into /ingredients")
-
             Scraper.save(str(idx), res, folder_name)
             num_of_files += 1
+            print("[LOG]: Saved ", name, " to /ingredients as ", num_of_files, ".json")
+
             res.clear()
 
             time.sleep(4) # optional ..... i'm just being nice
@@ -155,6 +167,11 @@ if __name__ == "__main__":
     url = "https://www.thegoodscentscompany.com/peb-az.html"
     s = Scraper(url)
 
+    if (os.path.exists("index.json") == False):
+        print("[LOG]: index.json does not exist, building index.json")
+        fn_index = s.makeIndex()
     
-    fn_index = s.makeIndex()
+    else:
+        print("[LOG]: index.json exists, building ingredient list...")
+
     s.scrapeIndex()
