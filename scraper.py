@@ -15,7 +15,13 @@ class Scraper():
         self.url = url
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
-    
+
+    def getabslink(self, ending) -> str:
+        """Gets the absolute link"""
+
+        absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + ending # whatever man
+        return absolute_link
+
     def makeIndex(self, url=""):
         """Creates `index.json`
         
@@ -75,7 +81,9 @@ class Scraper():
         for item in on_clicks:
             name = item.get_text().replace("specialty", "")
             link = re.findall(link_pattern, item['onclick'])[0]
-            absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
+
+            absolute_link = self.getabslink(link)
+            # absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
 
             data = {
                 'idx': idx,
@@ -184,8 +192,11 @@ class Scraper():
             # hmm... haha
 
         data = Scraper.loadjson(fn_ingredient)
+        link = data['link']
+        soup = self.scrape(link).find_all("td", class_="wrd80")
 
-        
+
+
         # file name = `ingredients.name`
         # name = molecule/ingredient name
         # cas = cas number # NOTE: unique and important
