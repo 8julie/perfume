@@ -55,8 +55,6 @@ class Scraper():
 
         if (url == ""):
             url = self.url  
-
-
         response = requests.get(url)
         soup = BeautifulSoup(response.text, parser)
         time.sleep(4) # optional ..... i'm just being nice
@@ -215,10 +213,10 @@ class Scraper():
         cas = soup.find_all("td", class_="radw8") # cas number
 
 
+
         # file name = `ingredients.name`
         # name = molecule/ingredient name
         # cas = cas number # NOTE: unique and important
-        # jsmol = link to cool molecule simulator
         # adj = any RELEVANT adjectives used to describe the molecule
 
 

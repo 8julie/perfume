@@ -29,7 +29,16 @@ class TestScraper(unittest.TestCase):
 
     # @unittest.skip("Don't need to rebuild every time")
     def test_scrape_index(self):
-        self.s.scrapeIndex()
+        """Tests if index is correct"""
+
+        if (os.path.exists("/ingredients") == False):
+            self.s.scrapeIndex()
+
+        self.assertTrue(os.path.exists("/ingredients/172.json"))
+    
+    def test_scrape_profiles(self):
+        # self.s.saveProfiles()
+
 
 if __name__ == '__main__':
     unittest.main()
