@@ -16,7 +16,7 @@ class Scraper():
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
 
-    def getabslink(self, ending) -> str:
+    def getAbsLink(self, ending) -> str:
         """Gets the absolute link"""
 
         absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + ending # whatever man
@@ -82,7 +82,7 @@ class Scraper():
             name = item.get_text().replace("specialty", "")
             link = re.findall(link_pattern, item['onclick'])[0]
 
-            absolute_link = self.getabslink(link)
+            absolute_link = self.getAbsLink(link)
             # absolute_link = "http://" + urljoin(self.parsed_url.scheme, self.parsed_url.netloc) + "/" + link # whatever man
 
             data = {
@@ -193,8 +193,11 @@ class Scraper():
 
         data = Scraper.loadjson(fn_ingredient)
         link = data['link']
-        soup = self.scrape(link).find_all("td", class_="wrd80")
-
+        soup = self.scrape(link)
+        
+        # link = re.findall(link_pattern, item['onclick'])[0]
+        cas_pattern = r'CAS.*html'
+        cas = soup.find_all("td", class_="radw8") # cas number
 
 
         # file name = `ingredients.name`
