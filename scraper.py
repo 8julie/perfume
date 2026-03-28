@@ -16,6 +16,21 @@ class Scraper():
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
 
+    def testResponse(url:str)-> bool:
+        """Tests response"""
+
+        # Send a GET request to the URL
+        response = requests.get(url)
+        
+        # Check if the request was successful
+        if (response.status_code == 200):
+            # Parse the HTML content using BeautifulSoup
+            print(f"[SUCCESS] Page fetched successfully!  URL: ", url)
+            return True
+        else:
+            print(f"[ERROR] Failed to retrieve page.  \n  URL: ", url, "\n Status code: {response.status_code} \n ---------------------->\n")
+            return False
+
     def getAbsLink(self, ending) -> str:
         """Gets the absolute link"""
 
