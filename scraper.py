@@ -57,18 +57,20 @@ class Scraper():
 
     def tokenize(self):
         soup = self.scrape()
-        string = soup.get_text()
-    
-        match = re.findall(r'.*[a-z] specialty', string, flags=re.IGNORECASE)
+        text = soup.get_text()
+        
+        match = re.findall(r'.*[a-z]+ specialty', text, flags=re.IGNORECASE)
+        match = [re.sub(" specialty", "", item) for item in match] # cleans it from "specialty"
 
         if (match):
             print("[LOG] Match detected: ")
-            print(match)
+            for item in match:
+                print (item)
 
         else:
             print("[LOG] No match!")
             print("[LOG] Printing page: ")
-            print(string)
+            print(text)
 
         # print(pos)
         # tagged = nltk.pos_tag(tokens)
