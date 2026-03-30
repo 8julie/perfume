@@ -21,8 +21,28 @@ class Scraper():
         self.url = url
         self.parsed_url = urlparse(self.url)
         self.fn_index = ""
+    
+    def savePage(self, url="", fn=""):
+        """Scrapes a page without processing anything at all
+        
+        url: page to scrape
+        fn: file name
+        
+        """
+        if (url == ""):
+            url = self.url  
 
-    def testResponse(url:str)-> bool:
+        if(self.testResponse(url) == True):
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+            data = {url: soup}
+            self.save(fn, data, "test_folder")
+            time.sleep(4) # optional ..... i'm just being nice
+        
+        else: 
+            print("[ERROR] Unable to access page, error code: ", self.testResponse(url))
+
+    def testResponse(url:str)-> bool | int:
         """Tests response"""
 
         # Send a GET request to the URL
@@ -35,7 +55,7 @@ class Scraper():
             return True
         else:
             print(f"[ERROR] Failed to retrieve page.  \n  URL: ", url, "\n Status code: {response.status_code} \n ---------------------->\n")
-            return False
+            return response.status_code
 
     def getAbsLink(self, ending) -> str:
         """Gets the absolute link"""
