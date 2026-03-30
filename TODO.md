@@ -6,7 +6,7 @@ A quick reference list for things I need to do
 |--|--|
 |<center>***text acquisition***</center>|
 |scraping list of notes|done|
-|scraping all chemical pages|not done|
+|scraping all chemical pages|not done, refer to `base.json` from [reference](REFERENCE.md)|
 |<center>***tokenization***</center>|
 |tokenizing adjectives|'JJ' tagged with nltk but false positives present|
 |identify stopwords|unsure if necessary..? but not done|
