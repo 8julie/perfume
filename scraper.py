@@ -58,23 +58,20 @@ class Scraper():
     def tokenize(self):
         soup = self.scrape()
         text = soup.get_text()
+
+        isIndex = re.match(r'Perfume Bases & Specialties Listing', text)
+
+        if (isIndex):
+
+            note = re.findall(r'.*[a-z]+ specialty', text, flags=re.IGNORECASE)
+            note = [re.sub(" specialty", "", item) for item in note] # cleans it from "specialty"
+
+            # else:
+            #     cas = re.findall(r'[0-9]{2,7}-[0-9]{2}-[0-9]', text)
         
-        match = re.findall(r'.*[a-z]+ specialty', text, flags=re.IGNORECASE)
-        match = [re.sub(" specialty", "", item) for item in match] # cleans it from "specialty"
+        
 
-        if (match):
-            print("[LOG] Match detected: ")
-            for item in match:
-                print (item)
 
-        else:
-            print("[LOG] No match!")
-            print("[LOG] Printing page: ")
-            print(text)
-
-        # print(pos)
-        # tagged = nltk.pos_tag(tokens)
-        # print(tagged)
 
 
     def getCAS(soup:BeautifulSoup):
@@ -105,6 +102,7 @@ class Scraper():
 
 if __name__ == "__main__":
     url = "https://www.thegoodscentscompany.com/peb-az.html"
+    url = "https://www.thegoodscentscompany.com/data/rw1532201.html"
     s = Scraper(url)
     s.tokenize()
     # soup = s.scrape()
