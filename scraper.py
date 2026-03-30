@@ -10,6 +10,8 @@ import json
 import os
 
 import nltk
+from nltk import FreqDist
+from collections import Counter
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 
@@ -244,15 +246,13 @@ class Scraper():
             # NOTE: we only get the first instance of the CAS number
             cas = re.search(r'[0-9]{2,7}-[0-9]{2}-[0-9]', text)[0] # gets the FIRST cas number
 
-            # alphanum = re.compile(r'[^a-zA-Z]')
-            # matches = alphanum.findall(text)
-            # clean = 
-
             cleaned = re.sub(r'[^a-zA-Z]|(FR)|(FL)', " ", text) # only alphabetical numbers
-            tokens = set(word_tokenize(cleaned))
+            tokens = word_tokenize(cleaned)
             pos_tags = pos_tag(tokens)
             adjs = [word for word, pos in pos_tags if pos.startswith('JJ')] 
-            print("Adjectives: ", adjs)
+            fdist = FreqDist(adjs)
+            print ("Most common adjectives: ", fdist.most_common(15))
+            # print("Adjectives: ", adjs)
 
             # test = re.findall(r'.*[a-z]', text, flags=re.IGNORECASE)
 
