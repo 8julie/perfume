@@ -9,6 +9,10 @@ import json
 
 import os
 
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.tag import pos_tag
+
 class Scraper():
     def __init__(self, url):
         """Instantiates scraping from URL"""
@@ -79,8 +83,11 @@ class Scraper():
         """Creates `/ingredients`
         
         file name = index:idx
+
         idx = fragrance idx
+
         name = fragrance ingredient
+    
         link = link to ingredient information"""
 
         res = []
@@ -110,7 +117,7 @@ class Scraper():
         # fn = "index"
         return Scraper.save(fn, res)
 
-    def loadjson(fn='index.json'):
+    def loadjson(fn='index.json', dir=""):
         with open(fn, 'r') as file:
             data = json.load(file)
         
@@ -137,7 +144,6 @@ class Scraper():
             idx = note['idx']
             iidx = 1
 
-            # print(name, link)
             soup = self.scrape(link).find_all("td", class_="wrd80")
 
             for td in soup:
@@ -174,9 +180,9 @@ class Scraper():
         """Creates `/profiles`
         
         
-        Based on the fragrance
+        Based on the `ingredient`
         
-        1. Saves ingredients' profile 
+        1. Saves `ingredients` profile 
         2. and words associated with notes on this profile
         
         file name = `ingredients.name`
@@ -190,29 +196,78 @@ class Scraper():
         #         blenders = idxes that point back to ingredients/profiles?
         """
 
-        if (not (os.path.exists('/ingredients') and os.len(os.listdir('/ingredients')) != 0)):
-            raise Exception("/ingredients does not exist, run saveIndex() to create /ingredients")
+
+        dir = "ingredients"
+        out = "profiles"
+
+        if (os.path.exists(dir)):
+            if (len(os.listdir('ingredients')) != 0):
+                print ("[LOG]: Found /ingredients built for each note with ", len(os.listdir('ingredients')), " notes")
+                notes = os.listdir(dir)           
+                if (os.path.exists(out) == False):
+                    print(f'[LOG] /{out} folder not made, creating dir...')
+                    os.mkdir(out)
+                    print(f'[LOG] Created /{out}')
+                else:
+                    print(f'[LOG] Folder already exists: /{out}')
+            else:
+                raise Exception ("/ingredients exists but is empty?")
         else:
-            # igds = ingredients
-            igds = os.listdir("/ingredients")
+            raise Exception("/ingredients does not exist, run saveIndex() to create /ingredients")
 
-        for profile in igds:
-            fn = self.saveOneProfile(profile)
 
-    def saveOneProfile(self, fn_ingredient:str) -> str:
+        for note in notes:
+            fn = self.saveOneProfile(note, dir)
+            break
+
+
+    def saveOneProfile(self, fn_ingredient:str, dir="") -> str:
         if (not fn_ingredient.endswith(".json")):
             fn_ingredient += ".json"
             # hmm... haha
 
+        if (dir != ""):
+            fn_ingredient = dir + "/" + fn_ingredient
+
         data = Scraper.loadjson(fn_ingredient)
-        link = data['link']
-        soup = self.scrape(link)
-        
-        # link = re.findall(link_pattern, item['onclick'])[0]
-        cas_pattern = r'CAS.*html'
-        cas = soup.find_all("td", class_="radw8") # cas number
+
+        for chem in data:
+            idx = chem['idx']
+            ingr_name = chem['ingr_name']
+            ingr_link = chem['ingr_link']
+
+            link = self.getAbsLink(chem['ingr_link'])            
+            soup = self.scrape(link)
+            text = soup.get_text()
+            
+            # gets tag numbers
+            # NOTE: we only get the first instance of the CAS number
+            cas = re.search(r'[0-9]{2,7}-[0-9]{2}-[0-9]', text)[0] # gets the FIRST cas number
+
+            # alphanum = re.compile(r'[^a-zA-Z]')
+            # matches = alphanum.findall(text)
+            # clean = 
+
+            cleaned = re.sub(r'[^a-zA-Z]|(FR)|(FL)', " ", text) # only alphabetical numbers
+            tokens = set(word_tokenize(cleaned))
+            pos_tags = pos_tag(tokens)
+            adjs = [word for word, pos in pos_tags if pos.startswith('JJ')] 
+            print("Adjectives: ", adjs)
+
+            # test = re.findall(r'.*[a-z]', text, flags=re.IGNORECASE)
+
+            # print ("[LOG] Tester: ", test)
+
+            # print(f"{ingr_name} : {link}\n----------\nCAS: {cas}\nAdjectives: {adjs}")
+
+            break
 
 
+        # # print(f'[LOG] {data['ingr_name']} at link: {data['ingr_link']}')
+        # print("[LOG] Cas number: ", cas)
+
+            # note = re.findall(r'.*[a-z]+ specialty', text, flags=re.IGNORECASE)
+            # note = [re.sub(" specialty", "", item) for item in note] # cleans it from "specialty"
 
         # file name = `ingredients.name`
         # name = molecule/ingredient name
@@ -235,7 +290,4 @@ if __name__ == "__main__":
     
     else:
         print("[LOG]: index.json exists, building ingredient list...")
-
-    s.scrapeIndex()
-
-    
+        s.saveProfiles()
